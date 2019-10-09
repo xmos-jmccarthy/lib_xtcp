@@ -1,0 +1,50 @@
+
+import os.path
+
+def use_module(bld):
+
+    version = '6.1.0'
+
+    depends_on = [
+        'lib_ethernet',
+        'lib_otpinfo',
+        'lib_random'
+    ]
+    
+    sources = []
+
+    if(bld.env.XTCP_STACK == 'LWIP'):
+        bld.env.XCC_FLAGS += ['-DXTCP_STACK=LWIP']
+        # TODO fill in required sources for LWIP build
+    else:
+        bld.env.XCC_FLAGS += ['-DXTCP_STACK=UIP']
+        sources.append('src/xtcp_shared.xc')
+        sources.append('src/xtcp_uip.xc')
+        sources.append('src/xtcp_uip/clock-arch.xc')
+        sources.append('src/xtcp_uip/psock.c')
+        sources.append('src/xtcp_uip/uip_arp.c')
+        sources.append('src/xtcp_uip/uip_timer.c')
+        sources.append('src/xtcp_uip/uip.c')
+        sources.append('src/xtcp_uip/uip-fw.c')
+        sources.append('src/xtcp_uip/uiplib.c')
+        sources.append('src/xtcp_uip/uip-neighbor.c')
+        sources.append('src/xtcp_uip/uip-split.c')
+        sources.append('src/xtcp_uip/xcoredev.xc')
+        sources.append('src/xtcp_uip/autoip/autoip.c')
+        sources.append('src/xtcp_uip/dhcpc/dhcpc.c')
+        sources.append('src/xtcp_uip/igmp/igmp.c')
+
+    includes = ['api']
+    optional_headers = None
+    
+    bld.env.MODULE_XCC_FLAGS = bld.env.XCC_FLAGS + ['-Os'] + ['-DLWIP=1'] + ['-DUIP=2']
+
+    print(bld.env.MODULE_XCC_FLAGS)
+
+    bld.module(
+        source=sources,
+        includes=includes,
+        optional_headers=optional_headers,
+        depends_on=depends_on,
+        version=version)
+        
